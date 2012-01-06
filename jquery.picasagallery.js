@@ -29,7 +29,7 @@
                 getGallery()
             })
 
-        function renderNav(album){
+        function renderNav(title){
             if ($parent.children('.picasaGalleryNav').length < 1){
                 var $nav = $('<ul>',{
                     'class': 'picasaGalleryNav',
@@ -44,11 +44,11 @@
                                 })
                         )
                     ).prependTo($parent)
-            } else if (album) {
+            } else if (title) {
                 $('.picasaGalleryNav')
                     .append(
                         $('<li>')
-                            .text(album.title.$t)
+                            .text(title)
                     )
             } else {
                 $('.picasaGalleryNav li:nth-child(2)')
@@ -58,17 +58,17 @@
 
         function renderPage(items){
             var $ul = $('.picasaGallery')
-            $ul.children('li').detach();
+            $ul.children('li').detach()
             $.each(items, function(i,item){
                 item.appendTo($ul);
             })
         }
 
-        function getImage(image){
+        function getImage(url,title){
             var $dialog = $('<div>')
-                .attr('title',image.title.$t);
+                .attr('title',title);
             $('<img>')
-                .attr('src',image.content.src)
+                .attr('src',url)
                 .appendTo($dialog)
                 .bind('load',function(){
                     $dialog.dialog({
@@ -84,14 +84,14 @@
                 })
         }
 
-        function getAlbum(album){
-            var album_url = album.link[0].href
-            if (!album_cache[album_url]){
-                album_cache[album_url] = [];
-                $.getJSON(album_url+api_args,function(data){
+        function getAlbum(url,title){
+            if (!album_cache[url]){
+                album_cache[url] = [];
+                $.getJSON(url+api_args,function(data){
                     $.each(data.feed.entry,function(i,item){
                         var title = item.title.$t
                         var thumb_url = item.media$group.media$thumbnail[0].url
+                        var image_url = item.content.src
                         var $item = $('<li>')
                             .hide()
                             .append(
@@ -103,17 +103,19 @@
                             ).append(
                                 $('<span>')
                                     .text(title)
-                            ).bind('click',function(){
-                                getImage(item)
+                            ).data({
+                                'type': 'image',
+                                'title': title,
+                                'url': image_url
                             })
-                        album_cache[album_url].push($item)
+                        album_cache[url].push($item)
                     })
-                    renderNav(album)
-                    renderPage(album_cache[album_url])
+                    renderNav(title)
+                    renderPage(album_cache[url])
                 })
             } else {
-                renderNav(album)
-                renderPage(album_cache[album_url])
+                renderNav(title)
+                renderPage(album_cache[url])
             }
         }
 
@@ -123,6 +125,7 @@
                     $.each(data.feed.entry,function(i,item){
                         var title = item.title.$t
                         var thumb_url = item.media$group.media$thumbnail[0].url
+                        var album_url = item.link[0].href
                         var $item = $('<li>')
                             .hide()
                             .append(
@@ -134,8 +137,11 @@
                             ).append(
                                 $('<span>')
                                     .text(title)
-                            ).bind('click',function(){
-                                getAlbum(item)
+                            )
+                            .data({
+                                'type': 'album',
+                                'title': title,
+                                'url': album_url
                             })
                         gallery_cache.push($item)
                     })
@@ -144,6 +150,16 @@
                         }).appendTo($parent)
                     renderNav()
                     renderPage(gallery_cache)
+                    $('ul.picasaGallery').on('click','li',function(){
+                        var type = $(this).data()['type']
+                        var title = $(this).data()['title']
+                        var url = $(this).data()['url']
+                        if (type == 'album'){
+                            getAlbum(url,title)
+                        } else if (type == 'image'){
+                            getImage(url,title)
+                        }
+                    })
                 })
             } else {
                 renderNav()
