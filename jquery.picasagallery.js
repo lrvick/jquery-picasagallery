@@ -93,9 +93,13 @@
                         var title = item.title.$t
                         var thumb_url = item.media$group.media$thumbnail[0].url
                         var $item = $('<li>')
+                            .hide()
                             .append(
                                 $('<img>')
                                     .attr('src',thumb_url)
+                                    .bind('load',function(){
+                                        $item.show()
+                                    })
                             ).append(
                                 $('<span>')
                                     .text(title)
@@ -120,15 +124,18 @@
                         var title = item.title.$t
                         var thumb_url = item.media$group.media$thumbnail[0].url
                         var $item = $('<li>')
+                            .hide()
                             .append(
                                 $('<img>')
                                     .attr('src',thumb_url)
+                                    .bind('load',function(){
+                                        $item.show()
+                                    })
                             ).append(
                                 $('<span>')
                                     .text(title)
                             ).bind('click',function(){
                                 getAlbum(item)
-                                console.log('ihappen')
                             })
                         gallery_cache.push($item)
                     })
