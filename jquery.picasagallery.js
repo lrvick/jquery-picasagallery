@@ -3,7 +3,8 @@
 
         var settings = $.extend({
             'user': 'default',
-            'thumb_size':'150'
+            'thumb_size':'150',
+            'show_nav': true
         }, options);
 
         var $parent = this;
@@ -29,30 +30,54 @@
                 getGallery()
             })
 
-        function renderNav(title){
-            if ($parent.children('.picasaGalleryNav').length < 1){
-                var $nav = $('<ul>',{
-                    'class': 'picasaGalleryNav',
-                    }).append(
-                        $('<li>').html(
-                            $('<a>')
-                                .attr('href','#')
-                                .text('Gallery')
-                                .bind('click',function(event){
-                                    event.preventDefault;
-                                    getGallery()
-                                })
-                        )
-                    ).prependTo($parent)
-            } else if (title) {
-                $('.picasaGalleryNav')
+        function renderBack(){
+            var $ul = $('ul.picasaGallery')
+            var dummy_img = $ul.children('li:first').children('img').attr('src')
+            $ul.prepend(
+                $('<li>')
+                    .addClass('back')
+                    .bind('click',function(event){
+                        getGallery()
+                    })
                     .append(
-                        $('<li>')
-                            .text(title)
+                        $('<img>')
+                            .attr('src',dummy_img)
+                            .css('opacity','0.0')
+                    ).append(
+                        $('<span>')
+                            .text('<- Back')
                     )
-            } else {
-                $('.picasaGalleryNav li:nth-child(2)')
-                    .remove()
+            )
+        }
+
+        function renderNav(title){
+            if (settings.show_nav == true){
+                if ($parent.children('.picasaGalleryNav').length < 1){
+                    var $nav = $('<ul>',{
+                        'class': 'picasaGalleryNav',
+                        }).append(
+                            $('<li>').html(
+                                $('<a>')
+                                    .attr('href','#')
+                                    .text('Gallery')
+                                    .bind('click',function(event){
+                                        event.preventDefault;
+                                        getGallery()
+                                    })
+                            )
+                        ).prependTo($parent)
+                } else if (title) {
+                    $('.picasaGalleryNav')
+                        .append(
+                            $('<li>')
+                                .text(title)
+                        )
+                } else {
+                    $('.picasaGalleryNav li:nth-child(2)')
+                        .remove()
+                }
+            } else if (title){
+                renderBack()
             }
         }
 
@@ -94,6 +119,7 @@
                         var image_url = item.content.src
                         var $item = $('<li>')
                             .hide()
+                            .addClass('thumb')
                             .append(
                                 $('<img>')
                                     .attr('src',thumb_url)
@@ -110,12 +136,12 @@
                             })
                         album_cache[url].push($item)
                     })
-                    renderNav(title)
                     renderPage(album_cache[url])
+                    renderNav(title)
                 })
             } else {
-                renderNav(title)
                 renderPage(album_cache[url])
+                renderNav(title)
             }
         }
 
@@ -128,6 +154,7 @@
                         var album_url = item.link[0].href
                         var $item = $('<li>')
                             .hide()
+                            .addClass('thumb')
                             .append(
                                 $('<img>')
                                     .attr('src',thumb_url)
@@ -148,8 +175,8 @@
                     var $ul = $('<ul>',{
                         'class': 'picasaGallery',
                         }).appendTo($parent)
-                    renderNav()
                     renderPage(gallery_cache)
+                    renderNav()
                     $('ul.picasaGallery').on('click','li',function(){
                         var type = $(this).data()['type']
                         var title = $(this).data()['title']
