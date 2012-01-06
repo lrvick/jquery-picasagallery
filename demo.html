@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+    <script src="jquery.picasagallery.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="css/default.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" type="text/css" media="all" />
+    <title>jQuery-PicasaGallery Demo</title>
+    <style type="text/css">
+      body {
+        margin:0;
+        padding:0;
+      }
+      div#gallery {
+        width:90%;
+        margin:0 auto;
+      }
+    </style>
+    <script type="text/javascript">
+      $(document).ready(function (){
+          $("#gallery").picasaGallery({
+            'user': '109278148620470841006',
+            'thumb_size': '150',
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="gallery"></div>
+  </body>
+</html>
